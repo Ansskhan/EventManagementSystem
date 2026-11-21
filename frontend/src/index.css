@@ -139,3 +139,16 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .feature-visual .mini-booths{position:relative;z-index:2;align-self:flex-end;width:100%;max-width:212px;margin-bottom:4px}
 .feature-visual .mini-booths span{background:#fffdf8e0;color:#5f5570;font-weight:600;box-shadow:0 6px 16px #261a121f}
 @media(max-width:760px){.feature-badge{top:14px;left:14px;width:34px;height:34px}.feature-visual .mini-booths{max-width:190px}}
+/* Hero carousel */
+.hero-slide{position:absolute;inset:0;opacity:0;transition:opacity 1.1s ease}
+.hero-slide.is-active{opacity:1}
+.hero-slide img{width:100%;height:100%;object-fit:cover;object-position:77% center}
+.hero-slide-text{position:absolute;inset:0;z-index:2;pointer-events:none;animation:hero-text-in .9s cubic-bezier(.22,1,.36,1) both}
+.hero-slide-text .photo-tag{max-width:74%}
+.hero-slide-text .photo-caption{max-width:74%}
+.hero-dots{position:absolute;z-index:3;top:22px;right:22px;display:flex;gap:7px}
+.hero-dot{width:26px;height:4px;padding:0;border:0;border-radius:3px;background:rgba(255,253,248,.5);box-shadow:0 1px 6px rgba(20,12,24,.28);transition:background .25s,width .25s}
+.hero-dot:hover{background:rgba(255,253,248,.85)}
+.hero-dot.is-active{width:40px;background:#ed6037}
+@keyframes hero-text-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media(max-width:760px){.hero-dots{top:16px;right:16px;gap:6px}.hero-dot{width:20px}.hero-dot.is-active{width:30px}.hero-slide-text .photo-tag{max-width:80%}}

@@ -70,6 +70,11 @@ formatting. Prefer appending a clearly-scoped rule over rewriting a minified lin
 Public: home, events list, event detail, exhibitors directory, schedule, floor plan,
 about, contact, login, register (one boxed form for attendee/exhibitor).
 
+Home hero is a 4-slide crossfade carousel: each slide carries its own photo, headline,
+caption, "next up" sticker and live-stat line. It advances every 5.5s, has clickable
+dots top-right, and does not auto-advance when `prefers-reduced-motion` is set. Slide
+data lives in the `heroSlides` array at the top of `features/public/pages/HomePage.jsx`.
+
 Dashboard (`WorkspaceLayout`, shared by admin/organizer and exhibitor/attendee):
 overview, expos (list/new/edit), applications, profile, exhibitors, booths, sessions
 (list/new/edit), registrations, attendance, users, analytics, bookmarks, feedback,

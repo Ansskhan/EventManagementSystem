@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ArrowRight,
@@ -16,8 +16,61 @@ import {
 } from 'lucide-react'
 import PublicLayout from '../../../components/layout/PublicLayout'
 
+const heroSlides = [
+  {
+    image: '/assets/expo-hall.png',
+    alt: 'Visitors exploring a trade-show hall',
+    title: 'Good things happen when we get together.',
+    caption: 'MORE THAN AN EVENT. A CONNECTION.',
+    kicker: 'NEXT UP',
+    stickerTitle: 'Future Makers',
+    stickerMeta: '09:00 · Main stage',
+    pulse: '842 people are finding their way in',
+  },
+  {
+    image: '/assets/expos/itcn-asia-lahore-2027.jpg',
+    alt: 'An audience waiting for a keynote to begin',
+    title: 'Big ideas need a room full of people.',
+    caption: 'STAGE TO FLOOR. ONE CONVERSATION.',
+    kicker: 'ON STAGE',
+    stickerTitle: 'Opening keynote',
+    stickerMeta: '10:30 · Hall A',
+    pulse: '36 sessions across three days',
+  },
+  {
+    image: '/assets/expos/edu-expo-pakistan-2027.jpg',
+    alt: 'Colleagues talking around a laptop at a booth',
+    title: 'One hallway. A thousand introductions.',
+    caption: 'MEET. TALK. FOLLOW UP.',
+    kicker: 'NEXT UP',
+    stickerTitle: 'Founder roundtable',
+    stickerMeta: '12:15 · Lounge 2',
+    pulse: '128 exhibitors on the floor',
+  },
+  {
+    image: '/assets/expos/pakistan-industrial-expo-2027.jpg',
+    alt: 'Exhibition booths on a trade-show floor',
+    title: 'Every booth has a story to tell.',
+    caption: 'BUILT IN THE OPEN. SHOWN IN PERSON.',
+    kicker: 'NOW SHOWING',
+    stickerTitle: 'Indus Robotic Systems',
+    stickerMeta: 'Booth 214 · Hall 2',
+    pulse: '30 booths allocated this week',
+  },
+]
+
 export default function HomePage() {
   const [activeRole, setActiveRole] = useState('Organizers')
+  const [heroIndex, setHeroIndex] = useState(0)
+  const heroSlide = heroSlides[heroIndex]
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined
+    const timer = setInterval(() => {
+      setHeroIndex((current) => (current + 1) % heroSlides.length)
+    }, 5500)
+    return () => clearInterval(timer)
+  }, [])
   const roleContent = {
     Organizers: {
       title: 'A clear view of the whole picture.',
@@ -79,20 +132,39 @@ export default function HomePage() {
           <div className="hero-orbit orbit-one" />
           <div className="hero-orbit orbit-two" />
           <div className="photo-frame">
-            <img src="/assets/expo-hall.png" alt="Visitors exploring a trade-show hall" />
-            <span className="photo-tag">
-              Good things happen
-              <br />
-              when we get together.
-            </span>
-            <span className="photo-caption">MORE THAN AN EVENT. A CONNECTION.</span>
+            {heroSlides.map((slide, index) => (
+              <div
+                key={slide.image}
+                className={index === heroIndex ? 'hero-slide is-active' : 'hero-slide'}
+                aria-hidden={index !== heroIndex}
+              >
+                <img src={slide.image} alt={slide.alt} />
+              </div>
+            ))}
+            <div className="hero-slide-text" key={heroIndex}>
+              <span className="photo-tag">{heroSlide.title}</span>
+              <span className="photo-caption">{heroSlide.caption}</span>
+            </div>
+            <div className="hero-dots" role="tablist" aria-label="Hero highlights">
+              {heroSlides.map((slide, index) => (
+                <button
+                  key={slide.image}
+                  type="button"
+                  role="tab"
+                  aria-selected={index === heroIndex}
+                  aria-label={slide.stickerTitle}
+                  className={index === heroIndex ? 'hero-dot is-active' : 'hero-dot'}
+                  onClick={() => setHeroIndex(index)}
+                />
+              ))}
+            </div>
           </div>
-          <span className="hero-sticker sticker-top">
-            NEXT UP <strong>Future Makers</strong>
-            <small>09:00 · Main stage</small>
+          <span key={`top-${heroIndex}`} className="hero-sticker sticker-top">
+            {heroSlide.kicker} <strong>{heroSlide.stickerTitle}</strong>
+            <small>{heroSlide.stickerMeta}</small>
           </span>
-          <span className="hero-sticker sticker-bottom">
-            <span className="sticker-pulse" /> 842 people are finding their way in
+          <span key={`bottom-${heroIndex}`} className="hero-sticker sticker-bottom">
+            <span className="sticker-pulse" /> {heroSlide.pulse}
           </span>
         </div>
       </section>
