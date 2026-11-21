@@ -91,8 +91,9 @@ High impact
   `.hero-orbit` circles (`.orbit-one`, `.orbit-two` with negative `right`) push the
   document to 1099px at a 1024px viewport and 781px at 768px. 390px is clean because the
   orbits are hidden there.
-- The hero "Future Makers / next up" sticker (`.hero-sticker.sticker-top`, `left:-28px`)
-  is clipped by the photo frame's rounded corner at every width — text reads "…ure Makers".
+- ~~The hero "Future Makers / next up" sticker was clipped by the photo frame's rounded
+  corner.~~ Fixed: both stickers now live in `.hero-visual` instead of inside the
+  `overflow:hidden` `.photo-frame`, so they float over the image unclipped.
 
 Medium
 - Auth (login/register) on desktop: the form column sits low with a lot of empty space
@@ -133,7 +134,8 @@ duplicated per exhibitor.
 
 1. Mobile navigation in `PublicHeader` (hamburger + slide-in panel), and keep the CTA reachable.
 2. Kill the hero-orbit overflow at 768–1024px (clip the hero, hide orbits below 1050px).
-3. Reposition or redesign the hero "next up" sticker so it is never clipped.
+3. ~~Reposition the hero "next up" sticker so it is never clipped.~~ Done (moved out of
+   `.photo-frame`).
 4. Exhibitor card: collapse booth details into a compact line/badge count, fix truncation,
    improve mobile hierarchy.
 5. Auth screens: tighten vertical rhythm, strengthen disabled-button contrast.

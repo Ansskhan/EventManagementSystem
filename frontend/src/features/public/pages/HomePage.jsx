@@ -86,14 +86,14 @@ export default function HomePage() {
               when we get together.
             </span>
             <span className="photo-caption">MORE THAN AN EVENT. A CONNECTION.</span>
-            <span className="hero-sticker sticker-top">
-              NEXT UP <strong>Future Makers</strong>
-              <small>09:00 · Main stage</small>
-            </span>
-            <span className="hero-sticker sticker-bottom">
-              <span className="sticker-pulse" /> 842 people are finding their way in
-            </span>
           </div>
+          <span className="hero-sticker sticker-top">
+            NEXT UP <strong>Future Makers</strong>
+            <small>09:00 · Main stage</small>
+          </span>
+          <span className="hero-sticker sticker-bottom">
+            <span className="sticker-pulse" /> 842 people are finding their way in
+          </span>
         </div>
       </section>
 
