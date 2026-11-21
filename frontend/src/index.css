@@ -152,3 +152,36 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .hero-dot.is-active{width:40px;background:#ed6037}
 @keyframes hero-text-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media(max-width:760px){.hero-dots{top:16px;right:16px;gap:6px}.hero-dot{width:20px}.hero-dot.is-active{width:30px}.hero-slide-text .photo-tag{max-width:80%}}
+/* Landing: feature links, stat band, events, testimonials */
+.feature-link{display:inline-flex;align-items:center;gap:8px;margin-top:18px;font-size:11px;font-weight:600;color:#a9583e;transition:color .2s}
+.feature-link svg{transition:transform .25s}
+.feature-link:hover{color:#d14f2b}
+.feature-link:hover svg{transform:translateX(4px)}
+.platform-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:36px;background:#fffdf9;border:1px solid #e9e0d6;border-radius:7px;overflow:hidden}
+.platform-stat{display:flex;flex-direction:column;align-items:center;gap:9px;padding:26px 18px;text-align:center;border-left:1px solid #eee7df}
+.platform-stat:first-child{border-left:0}
+.platform-stat strong{font:600 34px/1 Manrope,sans-serif;letter-spacing:-1.6px;color:#302b2d;font-variant-numeric:tabular-nums}
+.platform-stat>span{font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:#8a7b6e}
+.home-events .section-heading{align-items:flex-end}
+.home-events .outline-button{width:max-content;flex:0 0 auto;background:#fffdf9;justify-content:center}
+.public-event-grid.home-events-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.home-events-grid .event-card-art{height:168px}
+.home-events-grid .event-card-body{padding:20px}
+.home-events-grid .event-card-body h2{font-size:18px;line-height:1.25}
+.home-events-grid .event-card-description{display:none}
+.home-events-grid .event-card-action{margin-top:16px;padding-top:14px}
+.testimonial-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.testimonial{margin:0;display:flex;flex-direction:column;gap:18px;background:#fffdf9;border:1px solid #e9e0d6;border-radius:6px;padding:26px}
+.testimonial blockquote{margin:0;font:500 15px/1.6 Manrope,sans-serif;letter-spacing:-.2px;color:#3b3234}
+.testimonial blockquote:before{content:'“';display:block;font:700 38px/0.7 Manrope,sans-serif;color:#e7a184;margin-bottom:14px}
+.testimonial-meta{display:flex;align-items:center;gap:11px;border-top:1px solid #eee7df;padding-top:16px;margin-top:auto}
+.testimonial-avatar{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:#f0ddd2;color:#a65d44;font:600 11px Manrope,sans-serif}
+.testimonial-meta strong{display:block;font-size:11px;font-weight:600}
+.testimonial-meta small{display:block;font-size:9px;color:#8a7b6e;margin-top:4px}
+.testimonial-foot{margin-top:28px}
+@media(max-width:1050px){.platform-stat strong{font-size:28px}.public-event-grid.home-events-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-events-grid>:last-child{grid-column:1/-1}.testimonial-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.testimonial-grid>:last-child{grid-column:1/-1}}
+/* Sticky, blurred public header */
+.header{position:sticky;top:0;z-index:40;transition:border-color .3s}
+.header.is-scrolled::before{content:'';position:fixed;top:0;left:0;right:0;height:100px;z-index:-1;background:rgba(250,248,243,.8);-webkit-backdrop-filter:blur(16px) saturate(1.15);backdrop-filter:blur(16px) saturate(1.15);border-bottom:1px solid rgba(232,227,217,.8);box-shadow:0 8px 30px rgba(48,37,29,.05)}
+@media(max-width:760px){.header.is-scrolled::before{height:80px}}
+@media(max-width:760px){.platform-stats{grid-template-columns:1fr 1fr;margin-top:26px}.platform-stat{padding:20px 14px;border-left:0;border-top:1px solid #eee7df}.platform-stat:nth-child(-n+2){border-top:0}.platform-stat:nth-child(even){border-left:1px solid #eee7df}.platform-stat strong{font-size:26px;letter-spacing:-1px}.public-event-grid.home-events-grid,.testimonial-grid{grid-template-columns:1fr}.home-events-grid>:last-child,.testimonial-grid>:last-child{grid-column:auto}.home-events .section-heading .outline-button{margin-top:16px}.testimonial{padding:22px}.feature-link{margin-top:14px}}

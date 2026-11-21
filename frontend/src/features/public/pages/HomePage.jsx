@@ -15,6 +15,8 @@ import {
   Users,
 } from 'lucide-react'
 import PublicLayout from '../../../components/layout/PublicLayout'
+import CountUp from '../../../components/CountUp'
+import { api } from '../../../api'
 
 const heroSlides = [
   {
@@ -59,10 +61,41 @@ const heroSlides = [
   },
 ]
 
+const testimonials = [
+  {
+    quote:
+      'EventSphere made our expo management effortless. The platform is intuitive and packed with features we actually use.',
+    initials: 'SA',
+    name: 'Sarah Ahmed',
+    role: 'Expo organizer',
+  },
+  {
+    quote:
+      'A fantastic platform for exhibitors. Registration was quick, our booth was easy to find, and support answered fast.',
+    initials: 'AR',
+    name: 'Ali Raza',
+    role: 'Exhibitor, Indus Robotic Systems',
+  },
+  {
+    quote:
+      'I found three sessions worth rearranging my week for and two partners I still work with. That never happened at other events.',
+    initials: 'FN',
+    name: 'Fatima Noor',
+    role: 'Attendee',
+  },
+]
+
 export default function HomePage() {
   const [activeRole, setActiveRole] = useState('Organizers')
   const [heroIndex, setHeroIndex] = useState(0)
+  const [upcomingExpos, setUpcomingExpos] = useState([])
   const heroSlide = heroSlides[heroIndex]
+
+  useEffect(() => {
+    api('/expo/getExpo?status=published')
+      .then((list) => setUpcomingExpos(list.slice(0, 3)))
+      .catch(() => setUpcomingExpos([]))
+  }, [])
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined
@@ -217,6 +250,9 @@ export default function HomePage() {
               <p>
                 Create your event, shape the agenda, and give every speaker and session a place.
               </p>
+              <Link className="feature-link" to="/events">
+                Learn more <ArrowRight size={14} />
+              </Link>
             </div>
           </article>
           <article className="feature">
@@ -240,6 +276,9 @@ export default function HomePage() {
               <LayoutGrid size={20} />
               <h3>Make room for everyone.</h3>
               <p>Manage exhibitor applications and allocate booths on one shared floor plan.</p>
+              <Link className="feature-link" to="/floor-plan">
+                Learn more <ArrowRight size={14} />
+              </Link>
             </div>
           </article>
           <article className="feature">
@@ -257,8 +296,37 @@ export default function HomePage() {
               <Users size={20} />
               <h3>Make the right connections.</h3>
               <p>Help attendees discover exhibitors, save sessions, and find their way around.</p>
+              <Link className="feature-link" to="/exhibitors">
+                Learn more <ArrowRight size={14} />
+              </Link>
             </div>
           </article>
+        </div>
+        <div className="platform-stats">
+          <div className="platform-stat">
+            <strong>
+              <CountUp value={500} suffix="+" />
+            </strong>
+            <span>Events hosted</span>
+          </div>
+          <div className="platform-stat">
+            <strong>
+              <CountUp value={2000} suffix="+" />
+            </strong>
+            <span>Exhibitors</span>
+          </div>
+          <div className="platform-stat">
+            <strong>
+              <CountUp value={500} suffix="K+" />
+            </strong>
+            <span>Attendees</span>
+          </div>
+          <div className="platform-stat">
+            <strong>
+              <CountUp value={99} suffix="%" />
+            </strong>
+            <span>Satisfaction rate</span>
+          </div>
         </div>
       </section>
 
@@ -460,6 +528,53 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="section wrap home-events">
+        <div className="section-heading">
+          <div>
+            <span className="eyebrow">UPCOMING EVENTS</span>
+            <h2>What’s coming up next.</h2>
+          </div>
+          <Link className="outline-button" to="/events">
+            View all events <ArrowRight size={15} />
+          </Link>
+        </div>
+        {upcomingExpos.length ? (
+          <div className="public-event-grid home-events-grid">
+            {upcomingExpos.map((expo) => (
+              <Link className="public-event-card" to={'/events/' + expo._id} key={expo._id}>
+                <div className="event-card-art">
+                  {expo.imageUrl ? (
+                    <img src={expo.imageUrl} alt={expo.title} loading="lazy" />
+                  ) : (
+                    <strong>{expo.theme}</strong>
+                  )}
+                  <span>{expo.status}</span>
+                </div>
+                <div className="event-card-body">
+                  <time className="event-card-date" dateTime={expo.startDate}>
+                    {new Date(expo.startDate).toLocaleDateString(undefined, {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </time>
+                  <h2>{expo.title}</h2>
+                  <p className="event-card-location">
+                    <MapPin size={14} /> {expo.location}
+                  </p>
+                  <div className="event-card-action">
+                    <span>View details</span>
+                    <ArrowUpRight size={16} />
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <p className="empty-state">Upcoming events will appear here soon.</p>
+        )}
+      </section>
+
       <section className="section wrap experience">
         <div className="experience-photo">
           <img
@@ -561,6 +676,40 @@ export default function HomePage() {
               </span>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="section wrap testimonials">
+        <div className="section-heading">
+          <div>
+            <span className="eyebrow">IN THEIR WORDS</span>
+            <h2>Trusted by event professionals.</h2>
+          </div>
+          <p>
+            Hear from organizers, exhibitors, and attendees who bring people together with
+            EventSphere.
+          </p>
+        </div>
+        <div className="testimonial-grid">
+          {testimonials.map((item) => (
+            <figure className="testimonial" key={item.name}>
+              <blockquote>{item.quote}</blockquote>
+              <figcaption className="testimonial-meta">
+                <span className="testimonial-avatar" aria-hidden="true">
+                  {item.initials}
+                </span>
+                <span>
+                  <strong>{item.name}</strong>
+                  <small>{item.role}</small>
+                </span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        <div className="testimonial-foot">
+          <Link className="button button-dark" to="/contact">
+            Read more reviews <ArrowUpRight size={17} />
+          </Link>
         </div>
       </section>
 

@@ -16,9 +16,19 @@ export function PublicHeader() {
   const { user, loading, logout } = useAuth()
   const navigate = useNavigate()
   const [profileOpen, setProfileOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const profileRef = useRef(null)
   const workspacePath = user ? '/dashboard' : '/register'
   const initials = user?.name?.trim()?.charAt(0)?.toUpperCase() || '?'
+
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 12)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   useEffect(() => {
     function closeProfile(event) {
@@ -42,7 +52,7 @@ export function PublicHeader() {
   }
 
   return (
-    <header className="header">
+    <header className={scrolled ? 'header is-scrolled' : 'header'}>
         <Link className="brand" to="/">
           <span className="brand-mark" aria-hidden="true">
             <i />

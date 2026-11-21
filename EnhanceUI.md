@@ -75,6 +75,20 @@ caption, "next up" sticker and live-stat line. It advances every 5.5s, has click
 dots top-right, and does not auto-advance when `prefers-reduced-motion` is set. Slide
 data lives in the `heroSlides` array at the top of `features/public/pages/HomePage.jsx`.
 
+Landing sections now follow the reference layout: hero carousel → audience strip →
+platform features (photo cards + "Learn more" + animated stat band) → roles workspace →
+planning steps → upcoming events (3 live cards from `/api/expo/getExpo?status=published`)
+→ experience photo → event-energy board → testimonials → closing CTA → footer.
+Animated numbers use `src/components/CountUp.jsx` (IntersectionObserver + rAF, respects
+`prefers-reduced-motion`, renders 0 until 35% visible).
+
+Public landing header is sticky (`position:sticky`, z-index 40). Past 12px of scroll it
+gets `.is-scrolled`, which paints a full-viewport blurred band via `::before`
+(`rgba(250,248,243,.8)` + `backdrop-filter: blur(16px) saturate(1.15)`), 100px tall on
+desktop / 80px under 760px so it matches the header height. Implemented in
+`components/layout/PublicLayout.jsx`; the flat `public-header` used by the other public
+pages is unchanged.
+
 Dashboard (`WorkspaceLayout`, shared by admin/organizer and exhibitor/attendee):
 overview, expos (list/new/edit), applications, profile, exhibitors, booths, sessions
 (list/new/edit), registrations, attendance, users, analytics, bookmarks, feedback,
