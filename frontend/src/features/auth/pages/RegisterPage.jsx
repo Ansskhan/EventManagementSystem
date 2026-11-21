@@ -19,10 +19,10 @@ export default function RegisterPage() {
     products: '',
     services: '',
     website: '',
-    contactPerson: '',
     phone: '',
     category: '',
   })
+  const [profilePicture, setProfilePicture] = useState(null)
   const [visible, setVisible] = useState(false)
   const [confirmVisible, setConfirmVisible] = useState(false)
   const [touched, setTouched] = useState({})
@@ -42,16 +42,28 @@ export default function RegisterPage() {
     if (name === 'confirmPassword') return !value ? 'Please confirm your password.' : value !== values.password ? 'Passwords do not match.' : ''
     if (name === 'CompanyName') return !value ? 'Company name is required.' : value.length < 3 ? 'Use at least 3 characters.' : ''
     if (name === 'category') return !value ? 'Category is required.' : ''
-    if (name === 'contactPerson') return !value ? 'Contact person is required.' : value.length < 3 ? 'Use at least 3 characters.' : ''
-    if (name === 'phone') return !value ? 'Business phone is required.' : !/^\d{10,15}$/.test(value) ? 'Use 10–15 digits.' : ''
+    if (name === 'phone') {
+      if (values.role !== 'exhibitor') return ''
+      return !value ? 'Business phone is required.' : !/^\d{10,15}$/.test(value) ? 'Use 10–15 digits.' : ''
+    }
     if (name === 'description') return !value ? 'Company description is required.' : value.length < 10 ? 'Use at least 10 characters.' : ''
-    if (name === 'website') return value && !/^https?:\/\/[^\s]+$/i.test(value) ? 'Enter a valid URL starting with http:// or https://.' : ''
+    if (name === 'website') {
+      if (!value) return ''
+      try {
+        const url = new URL(value)
+        return url.protocol === 'http:' || url.protocol === 'https:'
+          ? ''
+          : 'Enter a valid URL starting with http:// or https://.'
+      } catch {
+        return 'Enter a valid URL starting with http:// or https://.'
+      }
+    }
     if (['products', 'services'].includes(name)) return value && value.length < 3 ? 'Use at least 3 characters or leave it blank.' : ''
     return ''
   }
 
   const requiredFields = ['name', 'email', 'password', 'confirmPassword']
-  const exhibitorFields = ['CompanyName', 'category', 'contactPerson', 'phone', 'description']
+  const exhibitorFields = ['CompanyName', 'category', 'phone', 'description']
   const formValid = [...requiredFields, ...(values.role === 'exhibitor' ? exhibitorFields : []), 'website', 'products', 'services'].every(
     (field) => !fieldError(field),
   )
@@ -74,7 +86,7 @@ export default function RegisterPage() {
         products: true,
         services: true,
         ...(values.role === 'exhibitor'
-          ? { CompanyName: true, category: true, contactPerson: true, phone: true, description: true }
+          ? { CompanyName: true, category: true, phone: true, description: true }
           : {}),
       })
       return
@@ -93,21 +105,22 @@ export default function RegisterPage() {
     }
     setBusy(true)
     try {
-      const data = await api('/auth/register', 'POST', {
-        name: values.name.trim(),
-        email: values.email.trim().toLowerCase(),
-        password: values.password,
-        role: values.role,
-        CompanyName: values.CompanyName.trim(),
-        description: values.description.trim(),
-        products: values.products.trim(),
-        services: values.services.trim(),
-        website: values.website.trim(),
-        contactPerson: values.contactPerson.trim(),
-        // Only send phone when provided; attendees don't have this field.
-        ...(values.phone.trim() ? { phone: values.phone.trim() } : {}),
-        category: values.category.trim(),
-      })
+      const form = new FormData()
+      form.append('name', values.name.trim())
+      form.append('email', values.email.trim().toLowerCase())
+      form.append('password', values.password)
+      form.append('role', values.role)
+      if (values.role === 'exhibitor') {
+        form.append('CompanyName', values.CompanyName.trim())
+        form.append('description', values.description.trim())
+        form.append('products', values.products.trim())
+        form.append('services', values.services.trim())
+        form.append('website', values.website.trim())
+        form.append('phone', values.phone.trim())
+        form.append('category', values.category.trim())
+        if (profilePicture) form.append('profilePicture', profilePicture)
+      }
+      const data = await api('/auth/register', 'POST', form)
       let next = '/verify-email?email=' + encodeURIComponent(values.email)
       if (data?.devVerificationPath) {
         next += '&devPath=' + encodeURIComponent(data.devVerificationPath)
@@ -175,9 +188,10 @@ export default function RegisterPage() {
                 </label>
               </div>
             </fieldset>
+            <div className="registration-fields">
             {values.role === 'exhibitor' && (
               <fieldset className="exhibitor-registration-fields">
-                <legend>Company details</legend>
+               
                 <div className="auth-field-row">
                   <label className="auth-field">
                     <span>Company name</span>
@@ -195,27 +209,17 @@ export default function RegisterPage() {
                     {validationMessage('category')}
                   </label>
                 </div>
-                <div className="auth-field-row">
-                  <label className="auth-field">
-                    <span>Contact person</span>
-                    <input
-                      name="contactPerson"
-                      value={values.contactPerson}
-                      onChange={update}
-                    />
-                    {validationMessage('contactPerson')}
-                  </label>
-                  <label className="auth-field">
-                    <span>Business phone</span>
-                    <input
-                      name="phone"
-                      type="tel"
-                      value={values.phone}
-                      onChange={update}
-                    />
-                    {validationMessage('phone')}
-                  </label>
-                </div>
+                <label className="auth-field">
+                  <span>Business phone</span>
+                  <input
+                    name="phone"
+                    type="tel"
+                    value={values.phone}
+                    onChange={update}
+                    placeholder="10–15 digits"
+                  />
+                  {validationMessage('phone')}
+                </label>
                 <div className="auth-field-row">
                   <label className="auth-field">
                     <span>Products</span>
@@ -229,7 +233,7 @@ export default function RegisterPage() {
                   </label>
                 </div>
                 <label className="auth-field">
-                  <span>Website</span>
+                  <span>Website <small>(optional)</small></span>
                   <input name="website" type="url" value={values.website} onChange={update} />
                   {validationMessage('website')}
                 </label>
@@ -243,6 +247,14 @@ export default function RegisterPage() {
                     rows={4}
                   />
                   {validationMessage('description')}
+                </label>
+                <label className="auth-field">
+                  <span>Company logo / profile picture <small>(optional)</small></span>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/svg+xml,.svg"
+                    onChange={(event) => setProfilePicture(event.target.files[0] || null)}
+                  />
                 </label>
               </fieldset>
             )}
@@ -273,6 +285,11 @@ export default function RegisterPage() {
                 />
               </div>
               {validationMessage('email')}
+              {values.role === 'exhibitor' && (
+                <p className="field-hint">
+                  This email is also your company&apos;s contact email.
+                </p>
+              )}
             </div>
             <div className="auth-field">
               <label htmlFor="password">Password</label>
@@ -322,6 +339,7 @@ export default function RegisterPage() {
               <p className="field-hint">
                 Use 8 or more characters with uppercase, lowercase, a number and a symbol (@$!%*?&).
               </p>
+            </div>
             </div>
 
             <button className="button button-orange auth-submit" disabled={busy || !formValid}>

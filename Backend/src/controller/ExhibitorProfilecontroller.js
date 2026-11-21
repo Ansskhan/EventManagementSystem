@@ -1,11 +1,17 @@
 const Exhibitor = require("../model/exhibitorProfilemodel");
+const User = require("../model/Usermodel");
+const { isValidHttpUrl } = require("../services/validation");
 
 
 const CreateExhibitor = async (req, res) => {
     try {
-        const { CompanyName, description, products, services, website, contactPerson, phone, category } = req.body;
+        const { CompanyName, description, products, services, website, contactEmail, phone, category } = req.body;
 
         const userId = req.user.id;
+
+        if (!isValidHttpUrl(website)) {
+            return res.status(400).json({ message: "Website must be a valid URL starting with http:// or https://" });
+        }
 
         const logoFile = req.files?.image?.[0];
         const documentFiles = req.files?.documents || [];
@@ -19,7 +25,20 @@ const CreateExhibitor = async (req, res) => {
 
         const existing = await Exhibitor.findOne({ UserId: userId });
         if (existing) return res.status(400).json({ message: "You already have a company profile" });
-        const createExhibitor = new Exhibitor({ CompanyName, description, products, services, website, category, logoUrl, contactPerson, phone, documents: documentUrls, UserId: userId })
+        const account = await User.findById(userId).select("email");
+        const createExhibitor = new Exhibitor({
+            CompanyName,
+            description,
+            products,
+            services,
+            website: website || undefined,
+            category,
+            logoUrl,
+            contactEmail: contactEmail || account?.email,
+            phone: phone || undefined,
+            documents: documentUrls,
+            UserId: userId,
+        })
 
         await createExhibitor.save();
         return res.status(201).json({
@@ -57,7 +76,7 @@ const searchExhibitor = async (req, res) => {
             : {};
 
         if (req.query.category) filter.category = req.query.category;
-        const exhibitors = await Exhibitor.find(filter).select("-documents").populate("UserId", "name email");
+        const exhibitors = await Exhibitor.find(filter).select("-documents").populate("UserId", "name email profileImage");
         return res.status(200).json(exhibitors);
     }
     catch (error) {
@@ -82,9 +101,13 @@ const editExhibitor = async (req, res) => {
             return res.status(403).json({ message: "You can only update your own profile" });
         }
 
-        const { CompanyName, description, products, services, website, contactPerson, phone, category } = req.body;
+        const { CompanyName, description, products, services, website, contactEmail, phone, category } = req.body;
 
-        let updatedata = { CompanyName, description, products, services, website, contactPerson, phone, category }
+        if (!isValidHttpUrl(website)) {
+            return res.status(400).json({ message: "Website must be a valid URL starting with http:// or https://" });
+        }
+
+        let updatedata = { CompanyName, description, products, services, website, contactEmail, phone, category }
 
         const logoFile = req.files?.image?.[0];
         const documentFiles = req.files?.documents || [];

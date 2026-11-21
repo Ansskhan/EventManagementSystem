@@ -24,6 +24,22 @@ dist/
 build/
 
 # ==========================================================
+# Image / media assets (photos, logos, screenshots, drawings)
+# Keep them locally; they must not be pushed to GitHub from the
+# frontend or the backend.
+# ==========================================================
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.avif
+*.bmp
+*.tif
+*.tiff
+*.svg
+
+# ==========================================================
 # Backend runtime uploads (keep the folders locally, not in Git)
 # ==========================================================
 Backend/uploads/*

@@ -57,7 +57,7 @@ async function main() {
                 products: "Demo products",
                 services: "Demo services",
                 category: "Technology",
-                contactPerson: exhibitor.user.name,
+                contactEmail: exhibitor.user.email,
                 phone: "03001234567",
                 UserId: exhibitor.user._id,
             },

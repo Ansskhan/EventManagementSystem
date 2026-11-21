@@ -6,7 +6,10 @@ const uploadsRoot = path.join(__dirname, "../../uploads");
 const allowedFolders = new Set(["users", "expo" , "exhibitor", "applications"]);
 
 const fileFilter = (folderName, req, file, cb) => {
-    const imageTypes = ["image/jpeg", "image/png", "image/webp"];
+    const imageTypes = ["image/jpeg", "image/png", "image/webp", "image/svg+xml"];
+    // Some browsers/OS file pickers report SVG as image/svg, text/xml or with
+    // no MIME type at all, so also trust the .svg extension.
+    const isSvg = file.mimetype === "image/svg" || path.extname(file.originalname).toLowerCase() === ".svg";
     const documentTypes = [
         "application/pdf",
         "application/msword",
@@ -18,7 +21,7 @@ const fileFilter = (folderName, req, file, cb) => {
         ? documentTypes
         : imageTypes;
 
-    if (!allowedTypes.includes(file.mimetype)) {
+    if (!allowedTypes.includes(file.mimetype) && !isSvg) {
         const error = new Error("Invalid file type.");
         error.status = 400;
         return cb(error, false);

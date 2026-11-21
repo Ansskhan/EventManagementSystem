@@ -6,6 +6,15 @@ const crypto = require("crypto");
 const revokedTokenModel = require("../model/revokesession");
 const { sendEmail, sendPasswordResetEmail } = require("../services/BrevoServices");
 const { notifyUser } = require("../services/NotificationService");
+const { isValidHttpUrl } = require("../services/validation");
+const ExpoRegistration = require("../model/expoRegistrationsmodel");
+const SessionRegistration = require("../model/SessionRegistrationmodel");
+const Feedback = require("../model/Feedbackmodel");
+const Message = require("../model/Messagemodel");
+const Notification = require("../model/Notificationmodel");
+const Bookmark = require("../model/Bookmarkmodel");
+const ExpoApplication = require("../model/exhibitorApplicationmodel");
+const Booth = require("../model/boothmodel");
 
 const registerUser = async (req, res) => {
 
@@ -21,7 +30,6 @@ const registerUser = async (req, res) => {
             products,
             services,
             website,
-            contactPerson,
             category,
         } = req.body;
 
@@ -34,12 +42,21 @@ const registerUser = async (req, res) => {
             });
         }
 
-        if (
-            selectedRole === "exhibitor" &&
-            (!CompanyName || !description || !contactPerson || !phone)
-        ) {
+        if (selectedRole === "exhibitor" && (!CompanyName || !description || !phone)) {
             return res.status(400).json({
-                message: "Company name, description, contact person, and phone are required for exhibitors",
+                message: "Company name, description, and phone are required for exhibitors",
+            });
+        }
+
+        if (phone && !/^[0-9]{10,15}$/.test(phone)) {
+            return res.status(400).json({
+                message: "Phone number must be 10-15 digits",
+            });
+        }
+
+        if (!isValidHttpUrl(website)) {
+            return res.status(400).json({
+                message: "Website must be a valid URL starting with http:// or https://",
             });
         }
 
@@ -86,17 +103,25 @@ const registerUser = async (req, res) => {
 
         await newUser.save();
         if (selectedRole === "exhibitor") {
-            await Exhibitor.create({
-                CompanyName,
-                description,
-                products,
-                services,
-                website,
-                contactPerson,
-                phone,
-                category: category || "General",
-                UserId: newUser._id,
-            });
+            try {
+                await Exhibitor.create({
+                    CompanyName,
+                    description,
+                    products,
+                    services,
+                    website: website || undefined,
+                    contactEmail: newUser.email,
+                    phone: phone || undefined,
+                    category: category || "General",
+                    logoUrl: profileImage,
+                    UserId: newUser._id,
+                });
+            } catch (profileError) {
+                // Never leave a half-registered account behind if the company
+                // profile cannot be created.
+                await User.findByIdAndDelete(newUser._id);
+                return res.status(400).json({ message: profileError.message });
+            }
         }
         let emailResult = null;
         try {
@@ -268,7 +293,7 @@ const getUsers = async (req, res) => {
         const users = await User.find().select("-password -emailVerificationToken -passwordResetToken").lean();
         const exhibitorIds = users.filter((user) => user.role === "exhibitor").map((user) => user._id);
         const profiles = await Exhibitor.find({ UserId: { $in: exhibitorIds } })
-            .select("CompanyName description products services website contactPerson phone category UserId")
+            .select("CompanyName description products services website contactEmail phone category UserId")
             .lean();
         const profileByUserId = new Map(profiles.map((profile) => [profile.UserId.toString(), profile]));
         const usersWithProfiles = users.map((user) => ({
@@ -316,6 +341,44 @@ const unblockUser = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
         return res.status(200).json({ message: "User unblocked successfully", user });
+    }
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+const deleteUser = async (req, res) => {
+    try {
+        if (req.params.id === req.user.id) {
+            return res.status(400).json({ message: "You cannot delete your own account" });
+        }
+
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        if (user.role === "admin") {
+            return res.status(400).json({ message: "Administrator accounts cannot be deleted" });
+        }
+
+        await Promise.all([
+            Exhibitor.deleteMany({ UserId: user._id }),
+            ExpoRegistration.deleteMany({ attendeeId: user._id }),
+            SessionRegistration.deleteMany({ attendeeId: user._id }),
+            Feedback.deleteMany({ userId: user._id }),
+            Bookmark.deleteMany({ attendeeId: user._id }),
+            Message.deleteMany({ $or: [{ senderId: user._id }, { receiverId: user._id }] }),
+            Notification.deleteMany({ userId: user._id }),
+            ExpoApplication.deleteMany({ $or: [{ exhibitorId: user._id }, { reviewedBy: user._id }] }),
+            Booth.updateMany(
+                { exhibitorId: user._id },
+                { $set: { exhibitorId: null, status: "available", updatedAt: Date.now() } }
+            ),
+            Booth.updateMany({ requestedBy: user._id }, { $pull: { requestedBy: user._id } }),
+        ]);
+
+        await User.findByIdAndDelete(user._id);
+        return res.status(200).json({ message: "User deleted successfully" });
     }
     catch (error) {
         return res.status(500).json({ error: error.message });
@@ -525,4 +588,4 @@ const ResetPassword = async (req, res) => {
     }
 }
 
-module.exports = { registerUser, LoginUser, getPendingExhibitors, approveExhibitor, rejectExhibitor, getUsers, blockUser, unblockUser, LogoutUser, Profile, EditProfile, VerifyEmail, ForgotPassword, ResetPassword };
+module.exports = { registerUser, LoginUser, getPendingExhibitors, approveExhibitor, rejectExhibitor, getUsers, blockUser, unblockUser, deleteUser, LogoutUser, Profile, EditProfile, VerifyEmail, ForgotPassword, ResetPassword };

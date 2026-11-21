@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../../api'
+import { useAuth } from '../../../state/AuthContext'
 
 export default function ProfilePage() {
+  const { user } = useAuth()
   const [id, setId] = useState('')
   const [values, setValues] = useState({
     CompanyName: '',
@@ -10,7 +12,7 @@ export default function ProfilePage() {
     products: '',
     services: '',
     website: '',
-    contactPerson: '',
+    contactEmail: '',
     phone: '',
   })
   const [logo, setLogo] = useState(null)
@@ -27,8 +29,10 @@ export default function ProfilePage() {
         const profile = await api('/exhibitor/my-profile')
         if (profile) {
           setId(profile._id)
-          setValues(profile)
+          setValues({ ...profile, contactEmail: profile.contactEmail || user?.email || '' })
           setSavedDocuments(profile.documents || [])
+        } else {
+          setValues((current) => ({ ...current, contactEmail: user?.email || '' }))
         }
       } catch (error) {
         setError(error.message)
@@ -55,7 +59,7 @@ export default function ProfilePage() {
         'products',
         'services',
         'website',
-        'contactPerson',
+        'contactEmail',
         'phone',
       ])
         form.append(key, values[key] || '')
@@ -126,28 +130,28 @@ export default function ProfilePage() {
               <input name="services" value={values.services || ''} onChange={update} />
             </label>
             <label className="workspace-field">
-              <span>Website</span>
+              <span>Website <small>(optional)</small></span>
               <input name="website" type="url" value={values.website || ''} onChange={update} />
             </label>
             <label className="workspace-field">
-              <span>Contact person</span>
+              <span>Contact email</span>
               <input
-                name="contactPerson"
-                value={values.contactPerson}
+                name="contactEmail"
+                type="email"
+                value={values.contactEmail || ''}
                 onChange={update}
-                minLength={3}
-                required
+                placeholder="company@example.com"
               />
             </label>
             <label className="workspace-field">
-              <span>Phone</span>
-              <input name="phone" value={values.phone} onChange={update} required />
+              <span>Phone <small>(optional)</small></span>
+              <input name="phone" value={values.phone || ''} onChange={update} />
             </label>
             <label className="workspace-field">
               <span>Logo</span>
               <input
                 type="file"
-                accept="image/jpeg,image/png,image/webp"
+                accept="image/jpeg,image/png,image/webp,image/svg+xml,.svg"
                 onChange={(event) => setLogo(event.target.files[0])}
               />
             </label>
@@ -156,7 +160,7 @@ export default function ProfilePage() {
               <input
                 type="file"
                 multiple
-                accept=".pdf,.doc,.docx,.jpg,.png,.webp"
+                accept=".pdf,.doc,.docx,.jpg,.png,.webp,.svg"
                 onChange={(event) => setDocuments(event.target.files)}
               />
             </label>

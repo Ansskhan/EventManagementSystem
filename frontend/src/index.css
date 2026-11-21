@@ -43,6 +43,8 @@
 .api-message{padding:14px 18px;margin:16px 0;color:#3e6543;background:#eaf2e5;border:1px solid #cadbc3;border-radius:5px}
 .page-search{padding:12px 15px;border:1px solid #ded4c9;border-radius:5px;background:#fffdf9;font-size:13px;max-width:100%;margin-bottom:20px;min-width:200px}
 .record-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0}
+.records-table .record-actions{align-items:stretch;gap:8px;margin:0}
+.records-table .record-actions>*{flex:1 1 auto;justify-content:center;min-width:78px;min-height:38px;padding:0 14px}
 .record-image{height:180px;object-fit:cover;border-radius:5px;margin-bottom:18px}
 .company-logo{height:65px;width:65px;object-fit:contain;margin-bottom:20px;border-radius:6px}
 .dash-card{margin-bottom:20px;overflow-wrap:anywhere}

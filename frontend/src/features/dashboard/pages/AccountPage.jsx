@@ -69,9 +69,9 @@ export default function AccountPage() {
             <div className="account-fields">
               <label className="account-field"><span>Full name</span><input value={name} onChange={(event) => setName(event.target.value)} required minLength={3} maxLength={30} placeholder="Your full name" /></label>
               <label className="account-field"><span>Phone number <small>Optional</small></span><div className="account-input-icon"><Phone size={15} /><input value={phone} onChange={(event) => setPhone(event.target.value)} pattern="[0-9]{10,15}" placeholder="10–15 digits" /></div></label>
-              <label className="account-field account-upload-field" htmlFor="profile-image"><span>Profile photo</span><div className="account-upload-box"><Camera size={18} /><div><strong>{image ? image.name : 'Choose a new profile photo'}</strong><small>JPG, PNG, or WEBP · Max 5MB</small></div><span>Browse</span></div></label>
+              <label className="account-field account-upload-field" htmlFor="profile-image"><span>Profile photo</span><div className="account-upload-box"><Camera size={18} /><div><strong>{image ? image.name : 'Choose a new profile photo'}</strong><small>JPG, PNG, WEBP, or SVG · Max 5MB</small></div><span>Browse</span></div></label>
             </div>
-            <input id="profile-image" className="account-file-input" type="file" accept="image/jpeg,image/png,image/webp" onChange={selectImage} />
+            <input id="profile-image" className="account-file-input" type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml,.svg" onChange={selectImage} />
             <div className="account-form-footer"><p>Your profile photo and name are visible in your workspace.</p><button className="account-save" disabled={busy || name.trim().length < 3}>{busy ? 'Saving...' : 'Save changes'} <Save size={15} /></button></div>
           </form>
         </section>

@@ -22,8 +22,23 @@ export default function UserManagementPage() {
 
   async function updateUser(id, action) {
     setBusy(true)
+    setError('')
     try {
       await api('/auth/' + action + '/' + id, 'PUT')
+      await loadUsers()
+    } catch (error) {
+      setError(error.message)
+    }
+    setBusy(false)
+  }
+
+  async function deleteUser(item) {
+    const label = item.companyProfile?.CompanyName || item.name
+    if (!window.confirm(`Delete ${label} (${item.email})? This cannot be undone.`)) return
+    setBusy(true)
+    setError('')
+    try {
+      await api('/auth/delete-user/' + item._id, 'DELETE')
       await loadUsers()
     } catch (error) {
       setError(error.message)
@@ -81,7 +96,7 @@ export default function UserManagementPage() {
                       <div className="user-company-cell">
                         <strong>{item.companyProfile.CompanyName}</strong>
                         <small>
-                          {item.companyProfile.category} · {item.companyProfile.contactPerson}
+                          {item.companyProfile.category} · {item.companyProfile.contactEmail || item.email}
                         </small>
                       </div>
                     ) : (
@@ -118,6 +133,15 @@ export default function UserManagementPage() {
                             Reject
                           </button>
                         </>
+                      )}
+                      {item.role !== 'admin' && (
+                        <button
+                          className="danger-button"
+                          disabled={busy}
+                          onClick={() => deleteUser(item)}
+                        >
+                          Delete
+                        </button>
                       )}
                     </div>
                   </td>

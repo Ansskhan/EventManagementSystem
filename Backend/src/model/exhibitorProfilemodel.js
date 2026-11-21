@@ -25,19 +25,20 @@ const exhibitorProfileSchema = mongoose.Schema({
     },
     website: {
         type: String,
-        match: [/^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/, "Please provide a valid website URL"]
+        trim: true
     },
     logoUrl: {
         type: String
     },
-    contactPerson: {
+    contactEmail: {
         type: String,
-        required: [true, "Please Enter a contact person name "],
-        minlength: [3, "Please Enter 3 characters long"]
+        trim: true,
+        lowercase: true,
+        match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Please provide a valid contact email"]
     },
     phone: {
         type: String,
-        required: [true, "Please Provide contact person contact no"]
+        trim: true
     },
     documents: {
         type: [String],

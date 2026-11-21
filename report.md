@@ -1,107 +1,151 @@
-EventSphere — static demo data task report
-==========================================
-Last updated: 2026-11-21
+EventSphere — demo data and exhibitor onboarding report
+=======================================================
+Last updated: 2026-11-22
 
 1. What the task asked for
 --------------------------
-- Add static demo data (events, exhibitors, booths, sessions) to the repository,
-  not only to the local MongoDB, so it ships with a GitHub push.
-- Fill in Backend/.env.example because that file is committed.
-- Provide images for the events/exhibitors.
-- Site should render proper data with working images.
+- Ship static demo data (expos, exhibitors, booths, sessions) with the repo,
+  not only in the local MongoDB.
+- Provide images for expos and exhibitor logos and make the site render them.
+- Fix exhibitor onboarding: accept SVG logos, show the logo on the attendee
+  exhibitor directory, and collect a picture during registration.
+- Simplify the exhibitor registration form, replace "contact person" with an
+  email-based contact, make logo/website optional, and fix validation so a bad
+  website cannot leave a half-registered account behind.
 
 
-2. What is DONE
----------------
-2.1 Git hygiene (earlier session, committed)
-- Rewrote .gitignore: .env / .env.* / *.local ignored, .env.example kept,
-  node_modules, dist, uploads, logs, OS/editor files.
-- Removed the already-staged Backend/.env and 21,039 node_modules files from the
-  index (files kept on disk). Verified the Brevo API key never entered the index.
-- Commits exist: 0610c9d, 291625b, 5c97036.
+2. Completed
+------------
+2.1 Git hygiene and environment template
+- .gitignore covers .env / .env.* / *.local, node_modules, dist, uploads, logs
+  and OS/editor files; .env.example is committed.
+- Backend/.env.example contains the 17 runtime variables with placeholders.
 
-2.2 Environment template
-- Backend/.env.example is committed with all 17 variables (PORT, MONGO_URI,
-  JWT_SECRET, BREVO_*, FRONTEND_URL, ADMIN_*, DEMO_*, DEMO_COMPANY_NAME).
-- Values are placeholders, no real API key.
+2.2 Research used to shape the dataset
+- ITIF Asia, Pakistan Industrial Expo, Green Pakistan Expo, IAPEX and Health
+  Asia dates/venues were researched to keep the 2027 demo editions realistic.
 
-2.3 Research (done, used to shape the dataset)
-- ITIF Asia: 4-6 Nov 2026, Lahore Expo Centre (24th edition); 2027 edition in Karachi.
-- Pakistan Industrial Expo (10th): 14-16 Nov 2026, Halls 1 & 2, Lahore Expo Centre.
-- Green Pakistan Expo: 26-28 Nov 2026, Lahore Expo Centre.
-- IAPEX Lahore: 4-6 Dec 2026, Lahore Expo Centre.
-- Health Asia: Karachi 10-12 Sep 2026; next Lahore edition 22-24 Apr 2027.
-- These were used to keep venues/themes realistic for the 2027 demo edition
-  already present in the database.
+2.3 Demo content in MongoDB
+- 6 published 2027 expos plus the user-created "Job Mela" (left untouched):
+    Pakistan Industrial Expo 2027   (11-14 Feb 2027, Expo Centre Lahore)
+    ITCN Asia Lahore 2027          (29-31 Jan 2027, Expo Centre Lahore)
+    Edu Expo Pakistan 2027         (5-7 Mar 2027, Islamabad Convention Centre)
+    Health Asia Karachi 2027       (15-18 Apr 2027, Karachi Expo Centre)
+    Solar Pakistan Green Expo 2027 (20-23 May 2027, Expo Centre Lahore)
+    Build Asia Design Expo 2027    (10-13 Jun 2027, Pak-China Friendship Centre)
+- 30 booths (PIE-/ITC-/EDU-/HLT-/GRN-/BLD- prefixes), with prices, floor
+  positions, exhibitor assignments and booked/available status.
+- 24 sessions spread over the expo days with speakers, topics and fees.
+- 8 exhibitor accounts + company profiles (Mughal Precision Works, Indus
+  Robotic Systems, Shifa MedTech Solutions, Ravi Green Energy, Lahore Design
+  Collective, Karakoram Learning Labs, Chenab Textile Machinery, Sindh Solar
+  Works). "Job Mela" and the user-created "Nothing" profiles were not modified.
+- All 6 expo covers and all 8 exhibitor logos now point at files that exist in
+  the repo (previously they pointed at missing .png files, which is why cards
+  showed only the company name/initials).
 
-2.4 Database content (already inserted by an earlier partial run)
-- 6 demo expos for 2027 + 1 user-created expo ("Job Mela", left untouched).
-- 6 x 5 = 30 booths with floor positions, prices and assignments.
-- 6 x 4 = 24 sessions spread across the expo days.
-- 8 exhibitor profiles with company details, contacts and booth links
-  (Mughal Precision Works, Indus Robotic Systems, Shifa MedTech Solutions,
-  Ravi Green Energy, Lahore Design Collective, Karakoram Learning Labs,
-  Chenab Textile Machinery, Sindh Solar Works).
+2.4 Repo image assets
+- 6 real Unsplash photos in frontend/public/assets/expos/*.jpg (1600x900).
+- 8 branded SVG logos in frontend/public/assets/exhibitors/*.svg.
+- Unsplash was used instead of Pinterest because direct Pinterest downloads are
+  blocked (HTTP 403) and the images are user-uploaded/copyrighted.
 
-2.5 Images (new, in the repo)
-- 6 real photos downloaded from Unsplash into frontend/public/assets/expos/:
-    itcn-asia-lahore-2027.jpg          (conference audience)
-    pakistan-industrial-expo-2027.jpg  (factory automation)
-    edu-expo-pakistan-2027.jpg         (students / library)
-    health-asia-karachi-2027.jpg       (clinic interior)
-    solar-pakistan-green-expo-2027.jpg (solar farm)
-    build-asia-design-expo-2027.jpg    (architect drafting)
-  All downloaded, opened and visually checked. Each is 130-282 KB, 1600x900.
-- 8 branded SVG logos generated in frontend/public/assets/exhibitors/:
-    mughal-precision.svg, indus-robotic.svg, shifa-medtech.svg, ravi-green.svg,
-    lahore-design.svg, karakoram-learning.svg, chenab-textile.svg, sindh-solar.svg
+2.5 SVG upload support
+- Backend upload filter accepts image/svg+xml for every image field.
+- Some browsers report .svg as image/svg, text/xml or with no MIME type, so the
+  filter also trusts the .svg extension (case-insensitive).
+- SVG is enabled in the registration, company-profile and account picture
+  pickers. Verified with real multipart requests (registration 201, profile
+  update 200, text/xml + uppercase .SVG also accepted).
 
-2.6 Why Pinterest was not used
-- i.pinimg.com returns HTTP 403 to direct downloads (hotlink protection).
-- Pinterest images are user-uploaded, usually copyrighted, and scraping breaks
-  Pinterest's terms. Unsplash was used instead: free license, no attribution
-  required, safe to commit.
+2.6 Exhibitor registration and profile
+- One boxed registration form for both attendee and exhibitor (company details
+  and personal details are no longer split into two boxes).
+- Removed the separate contact-person field; the account email is stored as the
+  company contact email (`contactEmail`) on the exhibitor profile.
+- Company fields: name, category, business phone, products, services, website,
+  description, logo. Phone is required (10-15 digits); logo and website are
+  optional.
+- Registration collects the company logo/picture (optional); it is stored as
+  both the user profile image and the exhibitor `logoUrl`, so the logo appears
+  immediately in the attendee exhibitor directory.
+- Website URL is validated with a real URL parser before any database write.
+  Invalid URLs return 400 and create no account; if profile creation fails for
+  any reason the new user row is rolled back. This fixes the bug where a bad
+  website registered the email and a corrected retry said "User already exists".
+- Profile page and admin user list use contact email instead of contact person.
+  Existing demo profiles were migrated to contactEmail and contactPerson removed.
+
+2.7 Attendee exhibitor directory
+- Exhibitor cards use logoUrl, fall back to the exhibitor's user profileImage,
+  and fall back to initials if the image fails to load, so a broken image no
+  longer leaves the company name showing as alt text.
+
+2.8 Verification performed
+- SVG multipart uploads (registration and company profile) return 2xx.
+- Invalid website registration returns 400 and no user is created.
+- Valid registration with a phone (and no logo) returns 201 and stores
+  contactEmail (equal to the account email) plus the phone; missing phone
+  returns 400 with no user created.
+- Backend syntax checks (node --check) pass; frontend `npm run build` passes.
+- MongoDB check: 0 missing exhibitor logo files in frontend/public/assets.
 
 
-3. What is LEFT (in order)
---------------------------
-3.1 Write Backend/src/seedContent.js
-    The current file still seeds the old 2026 sample set. It must be replaced
-    with an idempotent seed that reproduces the 2027 dataset above:
-    - upsert 6 expos by title (published status),
-    - create/find the 8 exhibitor users + profiles,
-    - upsert 30 booths (numbered PIE-/ITC-/EDU-/HLT-/GRN-/BLD-) with
-      exhibitor assignments and booked/available status,
-    - upsert 24 sessions.
+2.9 Organizer user deletion
+- Admin user management has a Delete action next to Block/Unblock
+  (DELETE /api/auth/delete-user/:id, admin only), behind a browser confirm.
+- Deleting a user also removes their exhibitor profile, expo and session
+  registrations, bookmarks, feedback, notifications, messages and exhibitor
+  applications, and frees any booth they held.
+- Guards: an admin cannot delete their own account (400) and other admin
+  accounts cannot be deleted (400). Verified: self-delete 400, organizer
+  delete 200 with no leftover rows, unknown id 404.
+
+2.10 Images kept out of Git
+- .gitignore now ignores all image/media extensions (png, jpg/jpeg, gif, webp,
+  avif, bmp, tif/tiff, svg) for both frontend and backend, plus the existing
+  Backend/uploads rule.
+- Existing tracked images were removed from the Git index with
+  `git rm --cached` so they stay on disk locally but stop being pushed. A fresh
+  clone or a deploy from GitHub will not contain them; copy them back from this
+  machine when needed.
+
+
+3. Left
+-------
+3.1 Rewrite Backend/src/seedContent.js
+    The committed file still seeds the old 2026 sample set. It must become the
+    idempotent 2027 seed:
+    - upsert the 6 expos by title (published),
+    - create/find the 8 exhibitor users + profiles with SVG logos and contact
+      emails,
+    - upsert the 30 booths with assignments and statuses,
+    - upsert the 24 sessions.
     Run with: cd Backend && npm run seed:content
 
-3.2 Point the database at the new image files
-    Expos currently reference .png paths whose files never existed, and
-    exhibitors reference missing .png logos. Re-running the seed must switch
-    them to the new .jpg / .svg files. This is the fix for the broken images.
+3.2 Fix Backend/.env.example
+    - FRONTEND_URL is still http://localhost:5176; Vite serves on 5173.
+    - DEMO_* values are still placeholders; replace them with static demo
+      credentials.
 
-3.3 Fix Backend/.env.example
-    FRONTEND_URL currently reads http://localhost:5176 but Vite serves on 5173.
-    Replace the DEMO_* placeholder values with the static demo credentials.
+3.3 End-to-end check
+    - Re-run the seed and confirm created/updated counts with no validation
+      errors.
+    - Hit /api/expo/getExpo?status=published, /api/exhibitor/search,
+      /api/booth/public and /api/session/get-sessions.
+    - Register an exhibitor in the browser with and without logo/website, then
+      confirm the logo on /dashboard/exhibitors.
 
-3.4 Verify
-    - Re-run the seed; expect created/updated counts and no validation errors.
-    - Check every image path in MongoDB exists on disk.
-    - Hit the public endpoints and confirm JSON + image URLs:
-        /api/expo/getExpo?status=published
-        /api/exhibitor/search
-        /api/booth/public
-        /api/session/get-sessions
-    - Optionally open the site and confirm cards render images.
-
-3.5 Commit the changes
-    Not done yet; waiting for the user to ask for a commit/push.
+3.4 Commit and push
+    Waiting for the user to request a commit/push.
 
 
-4. Blockers / notes
--------------------
-- Provider connection kept dropping mid-response during this session; no project
-  files or data were damaged.
-- "Job Mela" and the exhibitor rows named "Nothing" are user-created records and
-  must not be deleted by the seed.
+4. Notes / constraints
+----------------------
+- "Job Mela" and the user-created "Nothing" exhibitor rows must not be deleted
+  by any seed.
 - Booth numbers are globally unique in the schema, hence the per-expo prefixes.
+- The backend must be restarted (not just reloaded) to pick up middleware and
+  controller changes if it was started with `npm start`.
+- SVG files are served same-origin from /uploads; untrusted SVGs can contain
+  scripts, so uploads should remain limited to trusted exhibitor accounts.

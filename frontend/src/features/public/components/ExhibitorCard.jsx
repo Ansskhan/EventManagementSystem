@@ -1,15 +1,25 @@
+import { useEffect, useState } from 'react'
 import { Mail, MapPin, MessageCircle, Phone } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 export default function ExhibitorCard({ item, booths = [] }) {
   const exhibitorBooths = booths.filter((booth) => booth.exhibitorId?._id === item.UserId?._id)
   const initials = (item.CompanyName || 'Ex').trim().slice(0, 2).toUpperCase()
+  const logoSrc = item.logoUrl || item.UserId?.profileImage
+  const [logoFailed, setLogoFailed] = useState(false)
+
+  useEffect(() => setLogoFailed(false), [logoSrc])
 
   return (
     <article className="exhibitor-card">
       <div className="exhibitor-card-brand">
-        {item.logoUrl ? (
-          <img className="exhibitor-card-logo-image" src={item.logoUrl} alt={item.CompanyName} />
+        {logoSrc && !logoFailed ? (
+          <img
+            className="exhibitor-card-logo-image"
+            src={logoSrc}
+            alt={item.CompanyName}
+            onError={() => setLogoFailed(true)}
+          />
         ) : (
           <div className="exhibitor-logo" aria-hidden="true">{initials}</div>
         )}
@@ -36,7 +46,7 @@ export default function ExhibitorCard({ item, booths = [] }) {
       <div className="exhibitor-card-connect">
         <span className="exhibitor-card-connect-label">CONNECT</span>
         <div className="exhibitor-card-person">
-          <strong>{item.contactPerson || 'Exhibitor team'}</strong>
+          <strong>{item.contactEmail || item.UserId?.email || 'Exhibitor team'}</strong>
           {item.phone && <span><Phone size={13} /> {item.phone}</span>}
         </div>
         {exhibitorBooths.length > 0 && (

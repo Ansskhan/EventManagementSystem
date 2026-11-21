@@ -15,6 +15,7 @@ router.put("/reject-exhibitor/:id", authMiddleware, authorize("admin"), UserCont
 router.get("/users", authMiddleware, authorize("admin"), UserController.getUsers);
 router.put("/block-user/:id", authMiddleware, authorize("admin"), UserController.blockUser);
 router.put("/unblock-user/:id", authMiddleware, authorize("admin"), UserController.unblockUser);
+router.delete("/delete-user/:id", authMiddleware, authorize("admin"), UserController.deleteUser);
 router.post("/logout" , UserController.LogoutUser);
 router.get("/profile" , authMiddleware, UserController.Profile);
 router.put("/editprofile" , authMiddleware, userUpload.single("profilePicture"), UserController.EditProfile);
