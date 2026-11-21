@@ -89,6 +89,13 @@ desktop / 80px under 760px so it matches the header height. Implemented in
 `components/layout/PublicLayout.jsx`; the flat `public-header` used by the other public
 pages is unchanged.
 
+Reading progress + back to top (`ScrollUi` in `components/layout/PublicLayout.jsx`):
+`.scroll-progress` is a fixed 2px track under the sticky header (top 100px desktop /
+80px mobile) whose inner span is scaled with `scaleX(scrollY / maxScroll)`; the
+`.back-to-top` pill appears past 4% progress and gains `.is-complete` at the page end,
+which runs `back-to-top-ready` (orange pulse ring) and `arrow-nudge` on the icon. Both
+respects `prefers-reduced-motion` for the scroll behaviour.
+
 Dashboard (`WorkspaceLayout`, shared by admin/organizer and exhibitor/attendee):
 overview, expos (list/new/edit), applications, profile, exhibitors, booths, sessions
 (list/new/edit), registrations, attendance, users, analytics, bookmarks, feedback,
