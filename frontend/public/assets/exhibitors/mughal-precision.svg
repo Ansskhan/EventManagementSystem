@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Mughal Precision Works">
+  <defs>
+    <linearGradient id="mpBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3A5065"/>
+      <stop offset="1" stop-color="#1E2C38"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#mpBg)"/>
+  <circle cx="162" cy="38" r="52" fill="#ffffff" opacity="0.07"/>
+  <circle cx="38" cy="166" r="34" fill="#ffffff" opacity="0.05"/>
+  <path d="M34 152h132" stroke="#F2C9A8" stroke-opacity="0.45" stroke-width="2"/>
+  <text x="100" y="116" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="66" font-weight="700" fill="#FDF6EF">MP</text>
+  <text x="100" y="142" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" letter-spacing="3" fill="#FDF6EF" opacity="0.72">PRECISION</text>
+</svg>

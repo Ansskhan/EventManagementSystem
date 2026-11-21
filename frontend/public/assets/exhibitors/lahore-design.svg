@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Lahore Design Collective">
+  <defs>
+    <linearGradient id="ldBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#C97A45"/>
+      <stop offset="1" stop-color="#8A4622"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#ldBg)"/>
+  <path d="M34 152h132" stroke="#FFE2CC" stroke-opacity="0.45" stroke-width="2"/>
+  <path d="M136 34h30v30h-30z" fill="#FFE2CC" opacity="0.18"/>
+  <path d="M150 34v30M136 49h30" stroke="#FFE2CC" stroke-width="2" opacity="0.35"/>
+  <text x="100" y="116" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="66" font-weight="700" fill="#FFF8F1">LD</text>
+  <text x="100" y="142" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" letter-spacing="3" fill="#FFF8F1" opacity="0.75">DESIGN</text>
+</svg>

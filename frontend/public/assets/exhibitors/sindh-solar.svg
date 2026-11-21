@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Sindh Solar Works">
+  <defs>
+    <linearGradient id="ssBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#C39022"/>
+      <stop offset="1" stop-color="#7C560C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#ssBg)"/>
+  <circle cx="150" cy="50" r="24" fill="#FFE9A8" opacity="0.22"/>
+  <circle cx="150" cy="50" r="13" fill="#FFE9A8" opacity="0.3"/>
+  <path d="M34 152h132" stroke="#FFEEC2" stroke-opacity="0.45" stroke-width="2"/>
+  <text x="100" y="116" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="66" font-weight="700" fill="#FFFBEF">SS</text>
+  <text x="100" y="142" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" letter-spacing="3" fill="#FFFBEF" opacity="0.75">SOLAR</text>
+</svg>

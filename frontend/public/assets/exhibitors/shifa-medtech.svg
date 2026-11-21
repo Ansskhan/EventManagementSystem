@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Shifa MedTech Solutions">
+  <defs>
+    <linearGradient id="smBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#B04A40"/>
+      <stop offset="1" stop-color="#752B26"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#smBg)"/>
+  <path d="M150 34h20v20h-20zM160 24h0" fill="#FFD9C9" opacity="0.5"/>
+  <path d="M156 30v28M142 44h28" stroke="#FFE9DE" stroke-width="6" stroke-linecap="round" opacity="0.45"/>
+  <path d="M34 152h132" stroke="#FFD9C9" stroke-opacity="0.42" stroke-width="2"/>
+  <text x="100" y="116" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="66" font-weight="700" fill="#FFF4EE">SM</text>
+  <text x="100" y="142" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" letter-spacing="3" fill="#FFF4EE" opacity="0.72">MEDTECH</text>
+</svg>
