@@ -130,7 +130,14 @@ export default function HomePage() {
         <div className="feature-grid">
           <article className="feature">
             <div className="feature-visual peach">
-              <CalendarDays size={30} />
+              <img
+                src="/assets/expos/itcn-asia-lahore-2027.jpg"
+                alt="A seated audience waiting for a keynote to begin"
+                loading="lazy"
+              />
+              <span className="feature-badge">
+                <CalendarDays size={18} />
+              </span>
             </div>
             <div className="feature-copy">
               <CalendarDays size={20} />
@@ -142,7 +149,14 @@ export default function HomePage() {
           </article>
           <article className="feature">
             <div className="feature-visual lilac">
-              <LayoutGrid size={30} />
+              <img
+                src="/assets/expos/pakistan-industrial-expo-2027.jpg"
+                alt="Exhibition booths on a shared trade show floor"
+                loading="lazy"
+              />
+              <span className="feature-badge">
+                <LayoutGrid size={18} />
+              </span>
               <div className="mini-booths">
                 <span> B01 </span>
                 <span> B02 </span>
@@ -158,8 +172,14 @@ export default function HomePage() {
           </article>
           <article className="feature">
             <div className="feature-visual sage">
-              <Users size={30} />
-              <Check size={18} />
+              <img
+                src="/assets/expos/edu-expo-pakistan-2027.jpg"
+                alt="Colleagues talking around a laptop at a booth"
+                loading="lazy"
+              />
+              <span className="feature-badge">
+                <Users size={18} />
+              </span>
             </div>
             <div className="feature-copy">
               <Users size={20} />
