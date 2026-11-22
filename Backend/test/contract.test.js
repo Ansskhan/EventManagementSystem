@@ -1,6 +1,7 @@
 const assert = require("node:assert/strict");
 const { after, before, test } = require("node:test");
 const { spawn } = require("node:child_process");
+const path = require("node:path");
 
 const port = 4101;
 const baseUrl = `http://127.0.0.1:${port}`;
@@ -34,7 +35,7 @@ async function waitForServer(timeoutMs = 15000) {
 
 before(async () => {
     server = spawn(process.execPath, ["src/index.js"], {
-        cwd: __dirname.replace(/\/test$/, ""),
+        cwd: path.join(__dirname, ".."),
         env: { ...process.env, PORT: String(port), FRONTEND_URL: `http://127.0.0.1:${port + 1}` },
         stdio: "ignore",
     });

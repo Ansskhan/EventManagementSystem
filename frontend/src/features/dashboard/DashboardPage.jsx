@@ -14,6 +14,7 @@ import SessionFormPage from '../organizer/pages/SessionFormPage'
 import RegistrationsPage from '../organizer/pages/RegistrationsPage'
 import AnalyticsPage from '../organizer/pages/AnalyticsPage'
 import UserManagementPage from '../organizer/pages/UserManagementPage'
+import ExhibitorsPage from '../organizer/pages/ExhibitorsPage'
 import AttendancePage from '../organizer/pages/AttendancePage'
 import ExhibitorProfilePage from '../exhibitor/pages/ProfilePage'
 import ExhibitorExposPage from '../exhibitor/pages/ExposPage'
@@ -39,6 +40,7 @@ const rolePages = {
     sessionEdit: SessionFormPage,
     registrations: RegistrationsPage,
     attendance: AttendancePage,
+    exhibitors: ExhibitorsPage,
     users: UserManagementPage,
     analytics: AnalyticsPage,
     feedback: FeedbackPage,

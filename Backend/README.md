@@ -181,6 +181,16 @@ The profile create and update requests use `multipart/form-data` with these fiel
 - `image` for the profile image
 - `documents` for one or more documents
 
+`GET /api/exhibitor/getexhibitor` is admin-only and returns each profile with its
+linked user account plus `boothCount` and `applicationCount` values for the
+organizer Exhibitors tab.
+
+When an admin calls `DELETE /api/exhibitor/deleteexhibitor/:id`, the exhibitor's
+user account is deleted together with the company profile, applications,
+sessions, booth assignments (booths are released back to `available`),
+registrations, bookmarks, messages and notifications. An exhibitor calling the
+same route for their own profile only removes the company profile.
+
 ### Exhibitor application
 
 ```text

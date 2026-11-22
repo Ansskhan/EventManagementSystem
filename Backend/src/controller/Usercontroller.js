@@ -7,14 +7,7 @@ const revokedTokenModel = require("../model/revokesession");
 const { sendEmail, sendPasswordResetEmail } = require("../services/BrevoServices");
 const { notifyUser } = require("../services/NotificationService");
 const { isValidHttpUrl } = require("../services/validation");
-const ExpoRegistration = require("../model/expoRegistrationsmodel");
-const SessionRegistration = require("../model/SessionRegistrationmodel");
-const Feedback = require("../model/Feedbackmodel");
-const Message = require("../model/Messagemodel");
-const Notification = require("../model/Notificationmodel");
-const Bookmark = require("../model/Bookmarkmodel");
-const ExpoApplication = require("../model/exhibitorApplicationmodel");
-const Booth = require("../model/boothmodel");
+const { deleteUserCascade } = require("../services/deleteUserCascade");
 
 const registerUser = async (req, res) => {
 
@@ -361,23 +354,7 @@ const deleteUser = async (req, res) => {
             return res.status(400).json({ message: "Administrator accounts cannot be deleted" });
         }
 
-        await Promise.all([
-            Exhibitor.deleteMany({ UserId: user._id }),
-            ExpoRegistration.deleteMany({ attendeeId: user._id }),
-            SessionRegistration.deleteMany({ attendeeId: user._id }),
-            Feedback.deleteMany({ userId: user._id }),
-            Bookmark.deleteMany({ attendeeId: user._id }),
-            Message.deleteMany({ $or: [{ senderId: user._id }, { receiverId: user._id }] }),
-            Notification.deleteMany({ userId: user._id }),
-            ExpoApplication.deleteMany({ $or: [{ exhibitorId: user._id }, { reviewedBy: user._id }] }),
-            Booth.updateMany(
-                { exhibitorId: user._id },
-                { $set: { exhibitorId: null, status: "available", updatedAt: Date.now() } }
-            ),
-            Booth.updateMany({ requestedBy: user._id }, { $pull: { requestedBy: user._id } }),
-        ]);
-
-        await User.findByIdAndDelete(user._id);
+        await deleteUserCascade(user._id);
         return res.status(200).json({ message: "User deleted successfully" });
     }
     catch (error) {

@@ -1,6 +1,9 @@
 const Exhibitor = require("../model/exhibitorProfilemodel");
 const User = require("../model/Usermodel");
+const Booth = require("../model/boothmodel");
+const ExpoApplication = require("../model/exhibitorApplicationmodel");
 const { isValidHttpUrl } = require("../services/validation");
+const { deleteUserCascade } = require("../services/deleteUserCascade");
 
 
 const CreateExhibitor = async (req, res) => {
@@ -53,9 +56,44 @@ const CreateExhibitor = async (req, res) => {
 
 const getExhibitor = async (req, res) => {
     try {
-        const getdetail = await Exhibitor.find().populate("UserId", "name email");
+        const exhibitors = await Exhibitor.find()
+            .select("-documents")
+            .populate("UserId", "name email phone approvalStatus IsBlocked IsActive isEmailVerified createdAt")
+            .sort({ CompanyName: 1 })
+            .lean();
 
-        return res.status(200).json(getdetail)
+        const userIds = exhibitors
+            .map((exhibitor) => exhibitor.UserId?._id)
+            .filter(Boolean);
+
+        const [boothCounts, applicationCounts] = userIds.length
+            ? await Promise.all([
+                Booth.aggregate([
+                    { $match: { exhibitorId: { $in: userIds } } },
+                    { $group: { _id: "$exhibitorId", count: { $sum: 1 } } },
+                ]),
+                ExpoApplication.aggregate([
+                    { $match: { exhibitorId: { $in: userIds } } },
+                    { $group: { _id: "$exhibitorId", count: { $sum: 1 } } },
+                ]),
+            ])
+            : [[], []];
+
+        const boothCountByUser = new Map(boothCounts.map((item) => [item._id.toString(), item.count]));
+        const applicationCountByUser = new Map(
+            applicationCounts.map((item) => [item._id.toString(), item.count])
+        );
+
+        const data = exhibitors.map((exhibitor) => {
+            const userId = exhibitor.UserId?._id?.toString();
+            return {
+                ...exhibitor,
+                boothCount: userId ? boothCountByUser.get(userId) || 0 : 0,
+                applicationCount: userId ? applicationCountByUser.get(userId) || 0 : 0,
+            };
+        });
+
+        return res.status(200).json(data)
     }
     catch (error) {
         return res.status(500).json({ error: error.message })
@@ -149,11 +187,24 @@ const deleteExhibitor = async (req, res) => {
             return res.status(404).json({ message: "Exhibitor profile not found" });
         }
 
+        const isAdmin = req.user.role === "admin";
+
         if (
-            req.user.role !== "admin" &&
+            !isAdmin &&
             existingexhibiitor.UserId.toString() !== req.user.id
         ) {
             return res.status(403).json({ message: "You can only delete your own profile" });
+        }
+
+        // Organizers remove the exhibitor account itself so the user can no
+        // longer sign in and no orphaned records are left behind. Exhibitors
+        // deleting their own profile only remove the company profile.
+        if (isAdmin && existingexhibiitor.UserId) {
+            const result = await deleteUserCascade(existingexhibiitor.UserId);
+            return res.status(200).json({
+                message: "Exhibitor account deleted successfully",
+                ...result,
+            });
         }
 
         await Exhibitor.findByIdAndDelete(id);

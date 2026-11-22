@@ -1,56 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowUp, ChevronDown, LayoutDashboard, LogOut, UserRound } from 'lucide-react'
+import { ChevronDown, LayoutDashboard, LogOut, UserRound } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../state/AuthContext'
-
-function ScrollUi() {
-  const [progress, setProgress] = useState(0)
-
-  useEffect(() => {
-    function update() {
-      const max = document.documentElement.scrollHeight - window.innerHeight
-      setProgress(max > 0 ? Math.min(window.scrollY / max, 1) : 0)
-    }
-    update()
-    window.addEventListener('scroll', update, { passive: true })
-    window.addEventListener('resize', update)
-    return () => {
-      window.removeEventListener('scroll', update)
-      window.removeEventListener('resize', update)
-    }
-  }, [])
-
-  const complete = progress >= 0.995
-
-  function backToTop() {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
-  }
-
-  return (
-    <>
-      <div className="scroll-progress" aria-hidden="true">
-        <span style={{ transform: `scaleX(${progress})` }} />
-      </div>
-      <button
-        type="button"
-        className={`back-to-top${progress > 0.04 ? ' is-visible' : ''}${complete ? ' is-complete' : ''}`}
-        aria-label="Back to top"
-        title="Back to top"
-        onClick={backToTop}
-      >
-        <ArrowUp size={18} />
-      </button>
-    </>
-  )
-}
 
 export default function PublicLayout({ children }) {
   return (
     <div className="site">
       <PublicHeader />
       <main>{children}</main>
-      <ScrollUi />
     </div>
   )
 }

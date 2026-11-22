@@ -25,6 +25,7 @@ export const roleDetails = {
       ['sessions', 'Sessions', CalendarDays],
       ['registrations', 'Registrations', UserCog],
       ['attendance', 'Attendance', ScanLine],
+      ['exhibitors', 'Exhibitors', Building2],
       ['users', 'User management', UserCog],
       ['analytics', 'Analytics', Activity],
       ['feedback', 'Feedback', Star],

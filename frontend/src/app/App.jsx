@@ -21,12 +21,14 @@ import '../booth-detail.css'
 import '../sessions.css'
 import '../analytics.css'
 import LiveFormValidation from '../components/forms/LiveFormValidation'
+import ScrollUi from '../components/layout/ScrollUi'
 
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <LiveFormValidation />
+        <ScrollUi />
         <AppRouter />
       </BrowserRouter>
     </AuthProvider>
